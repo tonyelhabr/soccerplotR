@@ -1,4 +1,3 @@
-## TODO: Better path inference
 io_wrapper <- function(
     f,
     dir,
@@ -89,16 +88,16 @@ eng_team_colors_logos <- purrr::map_dfr(
 )
 
 purrr::walk(
-  eng_team_colors_logos$name,
-  \(name) {
-    url <- eng_team_colors_logos$logo[eng_team_colors_logos$name == name]
+  eng_team_colors_logos$short_name,
+  \(short_name) {
+    url <- eng_team_colors_logos$logo[eng_team_colors_logos$short_name == short_name]
     dir <- file.path('inst', 'ENG')
     io_wrapper(
       f = \(.x) { .x },
       read_f = \(.x) { .x },
       write_f = download.file,
       id = url,
-      name = name,
+      name = short_name,
       dir = dir,
       ext = 'png'
     )
@@ -107,12 +106,12 @@ purrr::walk(
 
 eng_primary_colors <- rlang::set_names(
   eng_team_colors_logos$primary,
-  eng_team_colors_logos$name
+  eng_team_colors_logos$short_name
 )
 
 eng_secondary_colors <- rlang::set_names(
   eng_team_colors_logos$secondary,
-  eng_team_colors_logos$name
+  eng_team_colors_logos$short_name
 )
 
 # write data ----
