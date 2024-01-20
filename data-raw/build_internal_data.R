@@ -76,6 +76,7 @@ eng_team_standings <- purrr::map_dfr(
   }
 )
 
+## TODO: nest by country
 eng_team_colors_logos <- purrr::map_dfr(
   eng_team_standings$team_id,
   \(team_id) {
@@ -95,7 +96,7 @@ purrr::walk(
     io_wrapper(
       f = \(.x) { .x },
       read_f = \(.x) { .x },
-      write_f = download.file,
+      write_f = \(.x, path) { download.file(.x, destfile = path, mode = 'wb', quiet = TRUE) },
       id = url,
       name = short_name,
       dir = dir,
@@ -104,6 +105,7 @@ purrr::walk(
   }
 )
 
+## TODO: Need to combine all country color pals for internal data.
 eng_primary_colors <- rlang::set_names(
   eng_team_colors_logos$primary,
   eng_team_colors_logos$short_name
@@ -114,10 +116,21 @@ eng_secondary_colors <- rlang::set_names(
   eng_team_colors_logos$short_name
 )
 
+eng_team_name_mapping <- rlang::set_names(
+  eng_team_colors_logos$short_name,
+  eng_team_colors_logos$short_name
+)
+
 # write data ----
 usethis::use_data(
   eng_primary_colors,
   eng_secondary_colors,
   internal = TRUE,
+  overwrite = TRUE
+)
+
+usethis::use_data(
+  eng_team_name_mapping,
+  internal = FALSE,
   overwrite = TRUE
 )
