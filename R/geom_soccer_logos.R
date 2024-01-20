@@ -1,6 +1,6 @@
-#' ggplot2 Layer for Visualizing ENG Team Logos
+#' ggplot2 Layer for Visualizing Soccer Team Logos
 #'
-#' @description This geom is used to plot ENG team logos instead
+#' @description This geom is used to plot soccer team logos instead
 #'   of points in a ggplot. It requires x, y aesthetics as well as a valid ENG
 #'   team abbreviation. The latter can be checked with [`valid_team_names()`].
 #'

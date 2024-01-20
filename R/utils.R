@@ -23,7 +23,7 @@ valid_team_names <- function(country = c('ENG', 'USA')){
 #' This function standardizes soccer team names to Fotmob defaults.
 #'
 #' @param team_name a character vector ofnames
-#' @inheritParams source valid_team_names
+#' @inheritParams valid_team_names
 #' @param keep_non_matches If `TRUE` (the default) an element of `team_name` that can't
 #'   be matched to any of the internal mapping vectors will be kept as is. Otherwise
 #'   it will be replaced with `NA`.
