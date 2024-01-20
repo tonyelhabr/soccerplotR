@@ -41,7 +41,7 @@ valid_team_names <- function(country = c('ENG', 'USA')){
 #'
 #' # replace non matches
 #' soccerplotR::clean_team_abbrs(team_names, country = 'ENG', keep_non_matches = FALSE)
-clean_team_names <- function(
+clean_team_name <- function(
     team_name,
     country = c('ENG', 'USA'),
     keep_non_matches = TRUE
@@ -54,20 +54,20 @@ clean_team_names <- function(
     'ENG' = soccerplotR::eng_team_name_mapping
   )
 
-  nms <- unname(mapping[toupper(team_name)])
+  mapping_names <- unname(mapping[team_name])
 
-  if (any(is.na(nms)) && getOption('soccerplotR.verbose', default = interactive())) {
+  if (any(is.na(mapping_names)) && getOption('soccerplotR.verbose', default = interactive())) {
     mapping_note <- switch (
       country,
       'ENG' = 'soccerplotR::eng_team_name_mapping',
       'USA' = 'soccerplotR::usa_team_name_mapping'
     )
-    cli::cli_warn('Abbreviations not found in {.code {mapping_note}}: {team_name[is.na(nms)]}')
+    cli::cli_warn('Abbreviations not found in {.code {mapping_note}}: {team_name[is.na(mapping_names)]}')
   }
 
-  if (isTRUE(keep_non_matches)) nms <- ifelse(!is.na(nms), nms, team_name)
+  if (isTRUE(keep_non_matches)) mapping_names <- ifelse(!is.na(mapping_names), mapping_names, team_name)
 
-  nms
+  mapping_names
 }
 
 logo_from_team_name <- function(team_name, country = c('ENG', 'USA')){
