@@ -18,6 +18,7 @@ io_wrapper <- function(
   message(sprintf('Scraping %s.', name))
 
   path <- file.path(dir, paste0(name, '.', ext))
+  path <- glue::glue(path)
 
   if (isFALSE(dir.exists(dir))) {
     dir.create(dir, recursive = TRUE)
@@ -33,13 +34,16 @@ io_wrapper <- function(
   res
 }
 
-get_fotmob_league_teams <- function(league_id) {
-  url <- paste0('https://www.fotmob.com/api/leagues?id=', league_id)
+get_fotmob_league_teams <- function(league_id, season = 2023) {
+  url <- paste0('https://www.fotmob.com/api/leagues?id=', league_id, '&season=', season)
   resp <- httr::GET(url)
   cont <- httr::content(resp, as = 'text')
   result <- jsonlite::fromJSON(cont)
   table_init <- result$table$data
   tables <- dplyr::bind_rows(table_init$table)
+  if (any('table' == names(tables))) {
+    tables <- tables$table
+  }
   tables$all[[1]] |>
     dplyr::transmute(
       team = name,
@@ -63,74 +67,79 @@ get_fotmob_team_colors_logos <- function(team_id) {
   )
 }
 
-all_leagues <- readr::read_csv('https://raw.githubusercontent.com/JaseZiv/worldfootballR_data/master/raw-data/fotmob-leagues/all_leagues.csv')
-eng_codes <- all_leagues[all_leagues$ccode == 'ENG', ][1:2, ]
-eng_team_standings <- purrr::map_dfr(
-  eng_codes$id,
+popular_league_ids <- c(47, 54, 87, 53, 130, 55)
+tier2_big5_and_mls_ids <- c(48, 110, 146, 86, 140, 8972)
+all_league_ids <- c(popular_league_ids, tier2_big5_and_mls_ids)
+# all_leagues <- readr::read_csv('https://raw.githubusercontent.com/JaseZiv/worldfootballR_data/master/raw-data/fotmob-leagues/all_leagues.csv')
+
+team_standings <- purrr::map_dfr(
+  all_league_ids,
   \(league_id) {
     io_wrapper(
       f = get_fotmob_league_teams,
       id = league_id,
-      dir = file.path('data-raw', 'fotmob', 'team_ids', 'ENG')
+      dir = file.path('data-raw', 'fotmob', 'team_ids')
     )
   }
 )
 
-## TODO: nest by country
-eng_team_colors_logos <- purrr::map_dfr(
-  eng_team_standings$team_id,
+team_colors_logos <- purrr::map_dfr(
+  team_standings$team_id,
   \(team_id) {
     io_wrapper(
       f = get_fotmob_team_colors_logos,
       id = team_id,
-      dir = file.path('data-raw', 'fotmob', 'team_details', 'ENG')
+      dir = file.path('data-raw', 'fotmob', 'team_details')
     )
   }
-)
+) |>
+  dplyr::mutate(
+    ## replace non-standard characters
+    name = stringi::stri_trans_general(name, "latin-ascii"),
+    short_name = stringi::stri_trans_general(short_name, "latin-ascii")
+  )
 
 purrr::walk(
-  eng_team_colors_logos$short_name,
+  team_colors_logos$short_name,
   \(short_name) {
-    url <- eng_team_colors_logos$logo[eng_team_colors_logos$short_name == short_name]
-    dir <- file.path('inst', 'ENG')
+    url <- team_colors_logos$logo[team_colors_logos$short_name == short_name]
     io_wrapper(
       f = \(.x) { .x },
       read_f = \(.x) { .x },
-      write_f = \(.x, path) { download.file(.x, destfile = path, mode = 'wb', quiet = TRUE) },
+      write_f = \(.x, path) { download.file(.x, destfile = glue::glue(path), mode = 'wb', quiet = TRUE) },
       id = url,
-      name = short_name,
-      dir = dir,
+      name = glue::glue(short_name),
+      dir = 'inst',
       ext = 'png'
     )
   }
 )
 
-## TODO: Need to combine all country color pals for internal data.
-eng_primary_colors <- rlang::set_names(
-  eng_team_colors_logos$primary,
-  eng_team_colors_logos$short_name
+primary_colors <- rlang::set_names(
+  team_colors_logos$primary,
+  team_colors_logos$short_name
 )
 
-eng_secondary_colors <- rlang::set_names(
-  eng_team_colors_logos$secondary,
-  eng_team_colors_logos$short_name
+secondary_colors <- rlang::set_names(
+  team_colors_logos$secondary,
+  team_colors_logos$short_name
 )
 
-eng_team_name_mapping <- rlang::set_names(
-  eng_team_colors_logos$short_name,
-  eng_team_colors_logos$short_name
+team_name_mapping <- rlang::set_names(
+  team_colors_logos$short_name,
+  team_colors_logos$short_name
 )
 
 # write data ----
 usethis::use_data(
-  eng_primary_colors,
-  eng_secondary_colors,
+  primary_colors,
+  secondary_colors,
   internal = TRUE,
   overwrite = TRUE
 )
 
 usethis::use_data(
-  eng_team_name_mapping,
+  team_name_mapping,
   internal = FALSE,
   overwrite = TRUE
 )
