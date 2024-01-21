@@ -22,15 +22,13 @@ navbar:
 
 template:
   bootstrap: 5
-  bootswatch: yeti
+  bootswatch: cosmo
+  # theme: arrow-light
   bslib:
-    font_scale: 1
-    base_font:
-      google: "Roboto"
-    heading_font:
-      google: "Roboto"
-    code_font:
-      google: "JetBrains Mono"
+    font_scale: 1.2
+    base_font: {google: "IBM Plex Sans"}
+    heading_font: {google: "Kanit"}
+    code_font: {google: "Fira Code"}
   opengraph:
     image:
       src: man/figures/social_preview.png
