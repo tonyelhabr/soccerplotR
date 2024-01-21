@@ -1,0 +1,73 @@
+url: https://tonyelhabr.github.io/soccerplotR/
+
+authors:
+  Sebastian Carl:
+    href: https://twitter.com/tonyelhabr
+
+home:
+  title: soccerplotR • Plot NBA Team Logos
+  description: >
+    A set of functions to visualize professional soccer analysis in 'ggplot2'.
+
+navbar:
+  type: dark
+  bg: dark
+  structure:
+    left:  [home, intro, reference, news, articles]
+    right: [github, more]
+  components:
+    reference:
+      text: "Functions"
+      href: reference/index.html
+
+template:
+  bootstrap: 5
+  bootswatch: cosmo
+  # theme: arrow-light
+  bslib:
+    font_scale: 1.2
+    base_font: {google: "IBM Plex Sans"}
+    heading_font: {google: "Kanit"}
+    code_font: {google: "Fira Code"}
+  opengraph:
+    image:
+      src: man/figures/social_preview.png
+      alt: "soccerplotR social preview card"
+    twitter:
+      creator: "@tonyelhabr"
+      card: summary_large_image
+
+reference:
+
+- title: Geoms
+  desc: >
+    ggplot2 geoms (geometric objects) that create a `layer()`. A layer combines data,
+    aesthetic mapping, a geom (geometric object), a stat (statistical transformation),
+    and a position adjustment.
+  contents:
+  - starts_with("geom_")
+
+- title: Scales
+  desc: >
+    Scales control the details of how data values are translated to visual
+    properties. Override the default scales to tweak details like the axis
+    labels or legend keys, or to use a completely different translation from
+    data to aesthetic.
+  contents:
+  - starts_with("scale")
+
+- title: Theme Elements
+  desc: >
+    Themes control the display of all non-data elements of the plot. Theme elements
+    can tweak individual settings inside `theme()`.
+  contents:
+  - starts_with("element")
+  - starts_with("theme")
+
+- title: Utilities
+  desc: >
+    Various helper functions.
+  contents:
+  - clean_team_abbrs
+  - valid_team_names
+  - team_name_mapping
