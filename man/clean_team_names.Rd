@@ -22,8 +22,17 @@ Non matches may be replaced with \code{NA} (depending on the value of \code{keep
 This function standardizes soccer team names to Fotmob defaults.
 }
 \examples{
-team_names <- c('Liverpool', 'Brighton', 'Bournemouth', 'AFC Bournemouth')
+\donttest{
+team_names <- c('Bournemouth', 'AFC Bournemouth', 'Bournemouth AFC')
 
 # keep non matches
-soccerplotR::clean_team_names(team_names, keep_non_matches = TRUE)
+soccerplotR::clean_team_names(team_names)
+
+# drop "bad" names
+soccerplotR::clean_team_names(team_names, keep_non_matches = FALSE)
+
+# silence warnings
+# options(soccerplotR.verbose = FALSE)
+soccerplotR::clean_team_names(team_names)
+}
 }

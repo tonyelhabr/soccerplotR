@@ -105,9 +105,9 @@ library(ggplot2)
 team_names <- soccerplotR::valid_team_names("ENG")
 
 df <- data.frame(
-  a = rep(1:6, 8),
-  b = sort(rep(1:8, 6), decreasing = TRUE),
-  team_name = c(team_names, rep(NA, 3))
+  a = c(rep(1:6, 7), c(1, 2)),
+  b = sort(c(rep(1:7, 6), c(8, 8)), decreasing = TRUE),
+  team_name = team_names
 )
 
 # keep alpha == 1 for all teams including an 'A'

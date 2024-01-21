@@ -68,6 +68,7 @@ reference:
   desc: >
     Various helper functions.
   contents:
-  - clean_team_abbrs
+  - clean_team_names
+  - all_valid_team_names
   - valid_team_names
   - team_name_mapping

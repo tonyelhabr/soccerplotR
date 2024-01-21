@@ -223,7 +223,7 @@ team_name_mapping[['ENG']] <- c(
     'Swansea City' = 'Swansea',
     'West Bromwich Albion' = 'West Brom',
     'West Ham United' = 'West Ham',
-    'Wigan Athletic' = 'Wigan',
+    # 'Wigan Athletic' = 'Wigan',
     'Wolverhampton Wanderers' = 'Wolves',
     ## Opta
     'WBA' = 'West Brom'

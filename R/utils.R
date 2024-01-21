@@ -44,10 +44,19 @@ all_valid_team_names <- function() {
 #'   Non matches may be replaced with `NA` (depending on the value of `keep_non_matches`).
 #' @export
 #' @examples
-#' team_names <- c('Liverpool', 'Brighton', 'Bournemouth', 'AFC Bournemouth')
+#' \donttest{
+#' team_names <- c('Bournemouth', 'AFC Bournemouth', 'Bournemouth AFC')
 #'
 #' # keep non matches
-#' soccerplotR::clean_team_names(team_names, keep_non_matches = TRUE)
+#' soccerplotR::clean_team_names(team_names)
+#'
+#' # drop "bad" names
+#' soccerplotR::clean_team_names(team_names, keep_non_matches = FALSE)
+#'
+#' # silence warnings
+#' # options(soccerplotR.verbose = FALSE)
+#' soccerplotR::clean_team_names(team_names)
+#' }
 clean_team_names <- function(
     team_name,
     keep_non_matches = TRUE
