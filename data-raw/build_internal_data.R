@@ -177,18 +177,18 @@ team_name_mapping <- rlang::set_names(
   team_colors_logos$short_name
 )
 
-# split(
-#   team_colors_logos,
-#   team_colors_logos$country
-# ) |>
-#   purrr::map(
-#   \(.x) {
-#     rlang::set_names(
-#       .x$short_name,
-#       .x$short_name
-#     )
-#   }
-# )
+team_name_mapping <- split(
+  team_colors_logos,
+  team_colors_logos$country
+) |>
+  purrr::map(
+  \(.x) {
+    rlang::set_names(
+      .x$short_name,
+      .x$short_name
+    )
+  }
+)
 
 # write data ----
 usethis::use_data(

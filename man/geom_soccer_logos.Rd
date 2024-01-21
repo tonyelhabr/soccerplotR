@@ -11,7 +11,6 @@ geom_soccer_logos(
   position = "identity",
   ...,
   na.rm = FALSE,
-  country = c("ENG", "USA"),
   show.legend = FALSE,
   inherit.aes = TRUE
 )
@@ -53,8 +52,6 @@ section 'Aesthetics' for a full list of possible arguments.}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
-
-\item{country}{One of \code{'ENG'} or \code{'USA'}}
 
 \item{show.legend}{logical. Should this layer be included in the legends?
 \code{NA}, the default, includes if any aesthetics are mapped.

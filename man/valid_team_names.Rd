@@ -4,10 +4,7 @@
 \alias{valid_team_names}
 \title{Output Valid Soccer Team Abbreviations}
 \usage{
-valid_team_names(country = c("ENG", "USA"))
-}
-\arguments{
-\item{country}{One of \code{'ENG'} or \code{'USA'}}
+valid_team_names()
 }
 \value{
 A vector of type \code{'character'}.

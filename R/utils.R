@@ -2,27 +2,19 @@
 #'
 #' @description Thenames used in this function are extracted from Fotmob
 #'
-#' @param country One of `'ENG'` or `'USA'`
 #' @export
 #' @return A vector of type `'character'`.
 #' @examples
 #' valid_team_names('ENG')
 #' valid_team_names('USA')
-valid_team_names <- function(country = c('ENG', 'USA')){
-  country <- rlang::arg_match(country)
-  m <- switch (
-    country,
-    'ENG' = soccerplotR::eng_team_name_mapping
-  )
-  n <- sort(unique(m))
-  n
+valid_team_names <- function() {
+  sort(unique(soccerplotR::team_name_mapping))
 }
 
 #' Standardize Soccer Team Names
 #'
 #' This function standardizes soccer team names to Fotmob defaults.
 #'
-#' @param team_name a character vector ofnames
 #' @inheritParams valid_team_names
 #' @param keep_non_matches If `TRUE` (the default) an element of `team_name` that can't
 #'   be matched to any of the internal mapping vectors will be kept as is. Otherwise
@@ -37,42 +29,31 @@ valid_team_names <- function(country = c('ENG', 'USA')){
 #' team_names <- c('Liverpool', 'Brighton', 'Bournemouth', 'AFC Bournemouth')
 #'
 #' # keep non matches
-#' soccerplotR::clean_team_abbrs(team_names, country = 'ENG', keep_non_matches = TRUE)
-#'
-#' # replace non matches
-#' soccerplotR::clean_team_abbrs(team_names, country = 'ENG', keep_non_matches = FALSE)
-clean_team_name <- function(
+#' soccerplotR::clean_team_names(team_names, keep_non_matches = TRUE)
+clean_team_names <- function(
     team_name,
-    country = c('ENG', 'USA'),
     keep_non_matches = TRUE
 ) {
   stopifnot(is.character(team_name))
   country <- rlang::arg_match(country)
 
-  mapping <- switch (
-    country,
-    'ENG' = soccerplotR::eng_team_name_mapping
-  )
+  mapping <- soccerplotR::team_name_mapping
 
   mapping_names <- unname(mapping[team_name])
 
   if (any(is.na(mapping_names)) && getOption('soccerplotR.verbose', default = interactive())) {
-    mapping_note <- switch (
-      country,
-      'ENG' = 'soccerplotR::eng_team_name_mapping',
-      'USA' = 'soccerplotR::usa_team_name_mapping'
-    )
-    cli::cli_warn('Abbreviations not found in {.code {mapping_note}}: {team_name[is.na(mapping_names)]}')
+    cli::cli_warn('Abbreviations not found in {.code soccerplotR::team_name_mapping}: {team_name[is.na(mapping_names)]}')
   }
 
-  if (isTRUE(keep_non_matches)) mapping_names <- ifelse(!is.na(mapping_names), mapping_names, team_name)
+  if (isTRUE(keep_non_matches)) {
+    mapping_names <- ifelse(!is.na(mapping_names), mapping_names, team_name)
+  }
 
   mapping_names
 }
 
-logo_from_team_name <- function(team_name, country = c('ENG', 'USA')){
-  country <- rlang::arg_match(country)
-  img_vctr <- paste0(country, '/', team_name, '.png')
+logo_from_team_name <- function(team_name){
+  img_vctr <- paste0(team_name, '.png')
   # This used to call the following system.file line
   # but it drops non matches which results in errors
   # system.file(img_vctr, package = 'soccerplotR')

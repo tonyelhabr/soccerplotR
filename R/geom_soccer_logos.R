@@ -90,11 +90,9 @@ geom_soccer_logos <- function(
     position = 'identity',
     ...,
     na.rm = FALSE,
-    country = c('ENG', 'USA'),
     show.legend = FALSE,
     inherit.aes = TRUE
 ) {
-  country <- rlang::arg_match(country)
   ggplot2::layer(
     data = data,
     mapping = mapping,
@@ -126,20 +124,16 @@ GeomSoccerlogo <- ggplot2::ggproto(
     width = 1.0,
     height = 1.0
   ),
-  draw_panel = function(data, panel_params, coord, na.rm = FALSE, country = c('ENG', 'USA')) {
+  draw_panel = function(data, panel_params, coord, na.rm = FALSE) {
 
     country <- rlang::arg_match(country)
 
-    team_name <- clean_team_name(
-      as.character(data$team_name),
-      country = country,
+    team_name <- clean_team_names(
+      data$team_name,
       keep_non_matches = TRUE
     )
 
-    data$path <- logo_from_team_name(
-      team_name,
-      country = country
-    )
+    data$path <- logo_from_team_name(team_name)
 
     ggpath::GeomFromPath$draw_panel(
       data = data,

@@ -36,6 +36,7 @@
 #'   scale_color_soccer(type = "secondary") +
 #'   scale_fill_soccer(alpha = 0.4) +
 #'   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+#' }
 NULL
 
 #' @rdname scale_soccer
