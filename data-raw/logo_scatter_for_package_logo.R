@@ -67,11 +67,9 @@ usethis::use_logo("data-raw/logo.png")
 
 p <- ggplot(df, aes(x = a, y = b)) +
   geom_soccer_logos(aes(team_name = team_name), width = 0.09, alpha = 0.2) +
-  annotate("text", x = 4.5, y = 2.5, label = "soccerplotR", family = "Kanit", size = 7, color = "#ffffff") +
+  annotate("text", x = 4.5, y = 2.5, label = "soccerplotR", family = "Kanit", size = 80 / .pt, color = "#ffffff") +
   theme_void() +
   coord_cartesian(xlim = c(0.5,8.5), ylim = c(0.5,4.5))
-
-# ggpreview(p, width = 1280, height = 640, units = "px", dpi = 600,  bg = "#222222")
 
 ggsave(
   "man/figures/social_preview.png",
