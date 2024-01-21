@@ -41,7 +41,7 @@
 #'
 #' df <- data.frame(
 #'   a = c(rep(1:6, 7), c(1, 2)),
-#'   b = sort(c(rep(1:7, 6), c(8, 8)), decreasing = TRUE),
+#'   b = sort(c(rep(2, 8, 6), c(1, 1)), decreasing = TRUE),
 #'   team_name = team_names
 #' )
 #'

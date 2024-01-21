@@ -11,7 +11,8 @@ knitr::opts_chunk$set(
   warning = FALSE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  dpi = 300
 )
 ```
 
@@ -36,11 +37,11 @@ pak::pak("tonyelhabr/soccerplotR")
 
 ## Examples
 
-```{r example, fig.width = 7, fig.height = 7, dpi=300}
+```{r example-1, fig.height=7, fig.width=7}
 library(soccerplotR)
 library(ggplot2)
 
-FONT <- 'Kanit'
+FONT <- "Kanit"
 sysfonts::font_add_google(FONT)
 showtext::showtext_auto()
 showtext::showtext_opts(dpi = 300)
@@ -71,22 +72,50 @@ ggplot(df) +
       label = team_name,
       fill = team_name
     ),
-    color = 'white',
+    color = "white",
     family = FONT,
     size = 10 / .pt,
     nudge_y = -0.5
   ) +
-  scale_fill_soccer(type = 'primary') +
+  scale_fill_soccer(type = "primary") +
   theme_void() +
   theme(
-    plot.margin = margin(25, 25, 25, 25, 'pt')
+    plot.margin = margin(25, 25, 25, 25, "pt")
   ) +
-  coord_cartesian(clip = 'off') +
+  coord_cartesian(clip = "off") +
   labs(
-    title = 'A random sample of 45 teams'
+    title = "A random sample of 45 teams"
   ) +
   theme(
-    plot.title.position = 'plot',
-    plot.title = element_text(family = FONT, size = 18, hjust = 0.5, vjust = 1)
+    plot.title.position = "plot",
+    plot.title = element_text(family = FONT, size = 18, hjust = 0.5)
+  )
+```
+
+```{r example-2, fig.height=10, fig.width=7.5}
+team_names <- soccerplotR::valid_team_names("ENG")
+
+df <- data.frame(
+  team_name = team_names,
+  value = 1:length(team_names)
+)
+
+df$team_name <- factor(df$team_name, levels = df$team_name[order(df$value)])
+
+ggplot(df, aes(y = team_name, x = value)) +
+  geom_col(aes(color = team_name, fill = team_name), width = 0.8) +
+  scale_color_soccer(type = "secondary") +
+  scale_fill_soccer(alpha = 0.8) +
+  theme_minimal() +
+  theme(
+    plot.title.position = "plot",
+    plot.title = element_text(family = FONT, size = 18),
+    axis.text = element_text(family = FONT),
+    panel.grid.major.y = element_blank()
+  ) +
+  labs(
+    x = NULL,
+    y = NULL,
+    title = "English teams in {soccerplotR}"
   )
 ```

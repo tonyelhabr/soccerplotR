@@ -38,7 +38,7 @@ p <- ggplot(df, aes(x = a, y = b)) +
   coord_cartesian(xlim = c(0.5,7.5), ylim = c(0.5,6.5)) +
   theme_void()
 
-
+BACKGROUND_COLOR <- "#60b922"
 sticker(
   p,
   package = "soccerplotR",
@@ -54,7 +54,7 @@ sticker(
   l_y = 1.75,
   l_alpha = 0.2,
   l_width = 5,
-  h_fill = "#60b922",
+  h_fill = BACKGROUND_COLOR,
   h_color = "black",
   h_size = 0.8,
   filename = "data-raw/logo.png",
@@ -80,5 +80,5 @@ ggsave(
   height = 640,
   units = "px",
   dpi = 600,
-  bg = "#222222"
+  bg = BACKGROUND_COLOR
 )
