@@ -36,6 +36,11 @@ pak::pak("tonyelhabr/soccerplotR")
 library(soccerplotR)
 library(ggplot2)
 
+FONT <- 'Kanit'
+sysfonts::font_add_google(FONT)
+showtext::showtext_auto()
+showtext::showtext_opts(dpi = 300)
+
 team_names <- unlist(unname(soccerplotR::valid_team_names()))
 set.seed(42)
 sampled_team_names <- sample(team_names, size = 45)
@@ -63,6 +68,7 @@ ggplot(df) +
       fill = team_name
     ),
     color = 'white',
+    family = FONT,
     size = 10 / .pt,
     nudge_y = -0.5
   ) +
@@ -71,7 +77,14 @@ ggplot(df) +
   theme(
     plot.margin = margin(15, 15, 15, 15, 'pt')
   ) +
-  coord_cartesian(clip = 'off')
+  coord_cartesian(clip = 'off') +
+  labs(
+    title = 'A random sample of 45 teams'
+  ) +
+  theme(
+    plot.title.position = 'plot',
+    plot.title = element_text(family = FONT, size = 18, hjust = 0.5, vjust = 1)
+  )
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />
