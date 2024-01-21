@@ -34,21 +34,43 @@ io_wrapper <- function(
   res
 }
 
-get_fotmob_league_teams <- function(league_id, season = 2023) {
+.get_fotmob_league_table_resp <- function(league_id, season) {
   url <- paste0('https://www.fotmob.com/api/leagues?id=', league_id, '&season=', season)
   resp <- httr::GET(url)
   cont <- httr::content(resp, as = 'text')
   result <- jsonlite::fromJSON(cont)
-  table_init <- result$table$data
+  result$table$data
+}
+
+get_fotmob_league_teams <- function(league_id, season = 2023) {
+  table_init <- .get_fotmob_league_table_resp(
+    league_id = league_id,
+    season = season
+  )
   tables <- dplyr::bind_rows(table_init$table)
-  if (any('table' == names(tables))) {
-    tables <- tables$table
+  table <- if('tables' %in% names(table_init)) {
+    dplyr::bind_rows(tables$table$all) |>
+      dplyr::distinct(id, name)
+  } else {
+    tables$all[[1]]
   }
-  tables$all[[1]] |>
+  table |>
     dplyr::transmute(
       team = name,
       team_id = id
     )
+}
+
+get_fotmob_league_info <- function(league_id, season = 2023) {
+  table_init <- .get_fotmob_league_table_resp(
+    league_id = league_id,
+    season = season
+  )
+  list(
+    league_id = table_init$leagueId,
+    league_name = table_init$leagueName,
+    country = table_init$ccode
+  )
 }
 
 get_fotmob_team_colors_logos <- function(team_id) {
@@ -72,16 +94,36 @@ tier2_big5_and_mls_ids <- c(48, 110, 146, 86, 140, 8972)
 all_league_ids <- c(popular_league_ids, tier2_big5_and_mls_ids)
 # all_leagues <- readr::read_csv('https://raw.githubusercontent.com/JaseZiv/worldfootballR_data/master/raw-data/fotmob-leagues/all_leagues.csv')
 
+league_info <- purrr::map_dfr(
+  all_league_ids,
+  \(league_id) {
+    io_wrapper(
+      f = get_fotmob_league_info,
+      id = league_id,
+      dir = file.path('data-raw', 'fotmob', 'league_info')
+    )
+  }
+)
+
 team_standings <- purrr::map_dfr(
   all_league_ids,
   \(league_id) {
     io_wrapper(
       f = get_fotmob_league_teams,
+      overwrite = TRUE,
       id = league_id,
       dir = file.path('data-raw', 'fotmob', 'team_ids')
-    )
+    ) |>
+      dplyr::mutate(
+        league_id = .env$league_id,
+        .before = 1
+      )
   }
-)
+) |>
+  dplyr::inner_join(
+    league_info |> dplyr::select(league_id, country),
+    by = dplyr::join_by(league_id)
+  )
 
 team_colors_logos <- purrr::map_dfr(
   team_standings$team_id,
@@ -93,10 +135,15 @@ team_colors_logos <- purrr::map_dfr(
     )
   }
 ) |>
+  dplyr::select(-country) |>
   dplyr::mutate(
     ## replace non-standard characters
-    name = stringi::stri_trans_general(name, "latin-ascii"),
-    short_name = stringi::stri_trans_general(short_name, "latin-ascii")
+    name = stringi::stri_trans_general(name, 'latin-ascii'),
+    short_name = stringi::stri_trans_general(short_name, 'latin-ascii')
+  ) |>
+  dplyr::inner_join(
+    team_standings |> dplyr::select(team_id, league_id, country),
+    by = dplyr::join_by(team_id)
   )
 
 purrr::walk(
@@ -129,6 +176,19 @@ team_name_mapping <- rlang::set_names(
   team_colors_logos$short_name,
   team_colors_logos$short_name
 )
+
+# split(
+#   team_colors_logos,
+#   team_colors_logos$country
+# ) |>
+#   purrr::map(
+#   \(.x) {
+#     rlang::set_names(
+#       .x$short_name,
+#       .x$short_name
+#     )
+#   }
+# )
 
 # write data ----
 usethis::use_data(
