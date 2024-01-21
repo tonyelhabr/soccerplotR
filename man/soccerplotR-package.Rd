@@ -13,6 +13,8 @@ An object of class \code{GeomSoccerlogo} (inherits from \code{Geom}, \code{ggpro
 GeomSoccerlogo
 }
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 A set of functions to visualize professional soccer analysis in 'ggplot2'.
 }
 \seealso{

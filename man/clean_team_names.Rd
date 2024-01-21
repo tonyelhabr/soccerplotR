@@ -13,7 +13,7 @@ it will be replaced with \code{NA}.}
 }
 \value{
 A character vector with the length of \code{team_name} and cleaned team names
-if they are included in \code{\link{eng_team_name_mapping}}, etc.
+if they are included in \code{\link{team_name_mapping}}, etc.
 (depending on the value of \code{country}). Non matches may be replaced
 with \code{NA} (depending on the value of \code{keep_non_matches}).
 }

@@ -32,7 +32,7 @@ valid_team_names <- function() {
 #'   it will be replaced with `NA`.
 #'
 #' @return A character vector with the length of `team_name` and cleaned team names
-#'   if they are included in [`eng_team_name_mapping`], etc.
+#'   if they are included in [`team_name_mapping`], etc.
 #'   (depending on the value of `country`). Non matches may be replaced
 #'   with `NA` (depending on the value of `keep_non_matches`).
 #' @export
