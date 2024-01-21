@@ -84,8 +84,10 @@ get_fotmob_team_colors_logos <- function(team_id) {
     'short_name' = result$details$shortName,
     'country' = result$details$country,
     'logo' = result$details$sportsTeamJSONLD$logo,
-    'primary' = result$history$teamColorMap$color,
-    'secondary' = result$history$teamColorMap$colorAlternate
+    'color_home' = result$history$teamColorMap$color,
+    'color_away' = result$history$teamColorMap$colorAway,
+    'color_alternate' = result$history$teamColorMap$colorAlternate,
+    'color_away_alternate' = result$history$teamColorMap$colorAwayAlternate
   )
 }
 
@@ -110,7 +112,6 @@ team_standings <- purrr::map_dfr(
   \(league_id) {
     io_wrapper(
       f = get_fotmob_league_teams,
-      overwrite = TRUE,
       id = league_id,
       dir = file.path('data-raw', 'fotmob', 'team_ids')
     ) |>
@@ -130,6 +131,7 @@ team_colors_logos <- purrr::map_dfr(
   \(team_id) {
     io_wrapper(
       f = get_fotmob_team_colors_logos,
+      overwrite = TRUE,
       id = team_id,
       dir = file.path('data-raw', 'fotmob', 'team_details')
     )
@@ -139,7 +141,9 @@ team_colors_logos <- purrr::map_dfr(
   dplyr::mutate(
     ## replace non-standard characters
     name = stringi::stri_trans_general(name, 'latin-ascii'),
-    short_name = stringi::stri_trans_general(short_name, 'latin-ascii')
+    short_name = stringi::stri_trans_general(short_name, 'latin-ascii'),
+    primary = color_home,
+    secondary = color_away
   ) |>
   dplyr::inner_join(
     team_standings |> dplyr::select(team_id, league_id, country),
