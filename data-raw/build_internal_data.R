@@ -124,14 +124,15 @@ team_standings <- purrr::map_dfr(
   dplyr::inner_join(
     league_info |> dplyr::select(league_id, country),
     by = dplyr::join_by(league_id)
-  )
+  ) |>
+  dplyr::arrange(country, team)
 
 team_colors_logos <- purrr::map_dfr(
   team_standings$team_id,
   \(team_id) {
     io_wrapper(
       f = get_fotmob_team_colors_logos,
-      overwrite = TRUE,
+      overwrite = FALSE,
       id = team_id,
       dir = file.path('data-raw', 'fotmob', 'team_details')
     )
@@ -139,7 +140,7 @@ team_colors_logos <- purrr::map_dfr(
 ) |>
   dplyr::select(-country) |>
   dplyr::mutate(
-    ## replace non-standard characters
+    ## replace non-standard characters since i can't think of a robust way to handle encodings
     name = stringi::stri_trans_general(name, 'latin-ascii'),
     short_name = stringi::stri_trans_general(short_name, 'latin-ascii'),
     primary = color_home,
@@ -150,6 +151,11 @@ team_colors_logos <- purrr::map_dfr(
     by = dplyr::join_by(team_id)
   )
 
+## inst/ files can't have spaces or periods
+sanitize_name_for_package <- function(x) {
+  gsub('[.]', '', gsub(' ', '_', x), x)
+}
+
 purrr::walk(
   team_colors_logos$short_name,
   \(short_name) {
@@ -157,9 +163,9 @@ purrr::walk(
     io_wrapper(
       f = \(.x) { .x },
       read_f = \(.x) { .x },
-      write_f = \(.x, path) { download.file(.x, destfile = glue::glue(path), mode = 'wb', quiet = TRUE) },
+      write_f = \(.x, path) { download.file(.x, destfile = path, mode = 'wb', quiet = TRUE) },
       id = url,
-      name = glue::glue(short_name),
+      name = sanitize_name_for_package(short_name),
       dir = 'inst',
       ext = 'png'
     )
@@ -176,10 +182,10 @@ secondary_colors <- rlang::set_names(
   team_colors_logos$short_name
 )
 
-team_name_mapping <- rlang::set_names(
-  team_colors_logos$short_name,
-  team_colors_logos$short_name
-)
+# team_name_mapping <- rlang::set_names(
+#   team_colors_logos$short_name,
+#   team_colors_logos$short_name
+# )
 
 team_name_mapping <- split(
   team_colors_logos,
@@ -194,10 +200,48 @@ team_name_mapping <- split(
   }
 )
 
+team_name_mapping[['ENG']] <- c(
+  team_name_mapping[['ENG']],
+  ## FBref
+  c(
+    'AFC Bournemouth' = 'Bournemouth',
+    'Brighton & Hove Albion' = 'Brighton',
+    'Cardiff City' = 'Cardiff',
+    'Huddersfield Town' = 'Huddersfield',
+    'Hull City' = 'Hull',
+    'Leeds United' = 'Leeds',
+    'Leicester City' = 'Leicester',
+    'Luton Town' = 'Luton',
+    'Manchester City' = 'Man City',
+    'Manchester United' = 'Man United',
+    'Newcastle United' = 'Newcastle',
+    'Norwich City' = 'Norwich',
+    'Queens Park Rangers' = 'QPR',
+    'Sheffield United' = 'Sheff Utd',
+    'Sheffield Wednesday' = 'Sheff Wed',
+    'Stoke City' = 'Stoke',
+    'Swansea City' = 'Swansea',
+    'West Bromwich Albion' = 'West Brom',
+    'West Ham United' = 'West Ham',
+    'Wigan Athletic' = 'Wigan',
+    'Wolverhampton Wanderers' = 'Wolves',
+    ## Opta
+    'WBA' = 'West Brom'
+  )
+)
+
+countries <- sort(unique(names(team_name_mapping)))
+for(country in countries) {
+  team_name_mapping[[country]] <- sort(team_name_mapping[[country]])
+}
+
+flat_team_name_mapping <- purrr::flatten_chr(team_name_mapping)
+
 # write data ----
 usethis::use_data(
   primary_colors,
   secondary_colors,
+  flat_team_name_mapping,
   internal = TRUE,
   overwrite = TRUE
 )

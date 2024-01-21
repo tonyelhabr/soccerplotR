@@ -7,6 +7,8 @@
 clean_team_names(team_name, keep_non_matches = TRUE)
 }
 \arguments{
+\item{team_name}{a character vector of team names}
+
 \item{keep_non_matches}{If \code{TRUE} (the default) an element of \code{team_name} that can't
 be matched to any of the internal mapping vectors will be kept as is. Otherwise
 it will be replaced with \code{NA}.}
@@ -14,8 +16,7 @@ it will be replaced with \code{NA}.}
 \value{
 A character vector with the length of \code{team_name} and cleaned team names
 if they are included in \code{\link{team_name_mapping}}, etc.
-(depending on the value of \code{country}). Non matches may be replaced
-with \code{NA} (depending on the value of \code{keep_non_matches}).
+Non matches may be replaced with \code{NA} (depending on the value of \code{keep_non_matches}).
 }
 \description{
 This function standardizes soccer team names to Fotmob defaults.
