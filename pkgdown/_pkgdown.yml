@@ -1,11 +1,11 @@
 url: https://tonyelhabr.github.io/soccerplotR/
 
 authors:
-  Sebastian Carl:
+  Tony ElHabr:
     href: https://twitter.com/tonyelhabr
 
 home:
-  title: soccerplotR • Plot NBA Team Logos
+  title: soccerplotR • Plot Soccer Team Logos
   description: >
     A set of functions to visualize professional soccer analysis in 'ggplot2'.
 
@@ -22,13 +22,15 @@ navbar:
 
 template:
   bootstrap: 5
-  bootswatch: cosmo
-  # theme: arrow-light
+  bootswatch: yeti
   bslib:
-    font_scale: 1.2
-    base_font: {google: "IBM Plex Sans"}
-    heading_font: {google: "Kanit"}
-    code_font: {google: "Fira Code"}
+    font_scale: 1
+    base_font:
+      google: "Roboto"
+    heading_font:
+      google: "Roboto"
+    code_font:
+      google: "JetBrains Mono"
   opengraph:
     image:
       src: man/figures/social_preview.png

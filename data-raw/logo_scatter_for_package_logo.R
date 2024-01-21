@@ -7,7 +7,7 @@ FONT <- 'Kanit'
 sysfonts::font_add_google(FONT)
 showtext_auto()
 
-team_names <- unlist(unname(soccerplotR::valid_team_names()))
+team_names <- unlist(unname(soccerplotR::all_valid_team_names()))
 set.seed(42)
 sampled_team_names <- sample(team_names, size = 42)
 
@@ -44,8 +44,8 @@ sticker(
   package = "soccerplotR",
   p_family = FONT,
   # p_fontface = "regular",
-  p_y = 0.6,
-  p_size = 20,
+  p_y = 0.8,
+  p_size = 40,
   s_x = 1,
   s_y = 1,
   s_width = 1.9,
@@ -54,7 +54,7 @@ sticker(
   l_y = 1.75,
   l_alpha = 0.2,
   l_width = 5,
-  h_fill = "#222222",
+  h_fill = "#60b922",
   h_color = "black",
   h_size = 0.8,
   filename = "data-raw/logo.png",
