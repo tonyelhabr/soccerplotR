@@ -1,17 +1,29 @@
-#' Output Valid Soccer Team Abbreviations
+#' Output Valid Soccer Team Names
 #'
-#' @description Thenames used in this function are extracted from Fotmob
+#' @description Team names used in this function are extracted from Fotmob
 #'
-#' @export
-#' @importFrom stats setNames
-#' @return A named vector of type `'character'`. Names are ISO 3166 3-letter country codes
+#' @param country One of "ENG", "ESP", "FRA", "GER", "ITA", or "USA". (Names are ISO 3166 3-letter country codes.)
+#'
+#' @return A vector of type `'character'`.
+#' @name valid_names
 #' @examples
-#' valid_team_names()
-valid_team_names <- function() {
+#' all_valid_team_names()
+#' valid_team_names("ENG")
+
+#' @rdname valid_names
+#' @export
+valid_team_names <- function(country) {
+  country <- match.arg(country, choices = names(soccerplotR::team_name_mapping))
+  sort(unique(soccerplotR::team_name_mapping[[country]]))
+}
+
+#' @rdname valid_names
+#' @export
+all_valid_team_names <- function() {
   countries <- names(soccerplotR::team_name_mapping)
 
   res <- lapply(countries, function(country) {
-    sort(unique(soccerplotR::team_name_mapping[[country]]))
+    valid_team_names(country)
   })
 
   names(res) <- countries

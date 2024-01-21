@@ -1,6 +1,6 @@
 #' Scales for Soccer Team Colors
 #'
-#' @description These functions map NBA/WNBA team names to their team colors in
+#' @description These functions map soccer team names to their team colors in
 #'   color and fill aesthetics
 #' @inheritParams ggplot2::scale_fill_manual
 #' @param type One of `"primary"` or `"secondary"` to decide which color type to use.
@@ -16,19 +16,16 @@
 #'   If `NA` (the default) no transparency will be applied. Can also be a vector of
 #'   alphas. All alpha levels must be in range `[0,1]`.
 #' @name scale_soccer
-#' @seealso The theme elements [element_soccer_logo()] and [element_wsoccer_logo()] to
-#'   replace axis text labels with logos.
 #' @aliases NULL
 #' @examples
 #' \donttest{
 #' library(soccerplotR)
 #' library(ggplot2)
 #'
-#' COUNTRY <- 'ENG'
-#' team_names <- valid_team_names(country = COUNTRY)
+#' team_names <- soccerplotR::valid_team_names("ENG")
 #'
 #' df <- data.frame(
-#'   random_value = runif(length(team_abbr), 0, 1),
+#'   random_value = runif(length(team_names), 0, 1),
 #'   team_name = team_names
 #' )
 #' ggplot(df, aes(x = team_name, y = random_value)) +

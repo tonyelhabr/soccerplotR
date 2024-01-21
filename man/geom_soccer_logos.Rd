@@ -70,8 +70,9 @@ created with \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}.
 }
 \description{
 This geom is used to plot soccer team logos instead
-of points in a ggplot. It requires x, y aesthetics as well as a valid ENG
-team abbreviation. The latter can be checked with \code{\link[=valid_team_names]{valid_team_names()}}.
+of points in a ggplot. It requires x, y aesthetics as well as a valid
+team abbreviation. The latter can be checked with \href{valid_names}{\code{all_valid_team_names()}}
+or \code{\link[=valid_team_names]{valid_team_names()}}.
 }
 \section{Aesthetics}{
 
@@ -79,7 +80,7 @@ team abbreviation. The latter can be checked with \code{\link[=valid_team_names]
 \itemize{
 \item{\strong{x}}{ - The x-coordinate.}
 \item{\strong{y}}{ - The y-coordinate.}
-\item{\strong{team_name}}{ - The team abbreviation. Should be one of \code{\link[=valid_team_names]{valid_team_names()}}. The function tries to clean team names internally by calling \code{\link[=clean_team_abbrs]{clean_team_abbrs()}}.}
+\item{\strong{team_name}}{ - The team abbreviation. Should be one of \code{\link{team_name_mapping}}. The function tries to clean team names internally by calling \code{\link[=clean_team_names]{clean_team_names()}}.}
 \item{\code{alpha = NULL}}{ - The alpha channel, i.e. transparency level, as a numerical value between 0 and 1.}
 \item{\code{colour = NULL}}{ - The image will be colorized with this colour. Use the special character \code{'b/w'} to set it to black and white. For more information on valid colour names in ggplot2 see \url{https://ggplot2.tidyverse.org/articles/ggplot2-specs.html?q=colour#colour-and-fill}}
 \item{\code{angle = 0}}{ - The angle of the image as a numerical value between 0° and 360°.}
@@ -101,32 +102,32 @@ A typical size is \code{height = 0.1} (see below examples).}
 library(soccerplotR)
 library(ggplot2)
 
-team_name <- soccerplotR::valid_team_names()
+team_names <- soccerplotR::valid_team_names("ENG")
 
 df <- data.frame(
-  a = rep(1:6, 5),
-  b = sort(rep(1:5, 6), decreasing = TRUE),
-  teams = team_name
+  a = rep(1:6, 8),
+  b = sort(rep(1:8, 6), decreasing = TRUE),
+  team_name = c(team_names, rep(NA, 3))
 )
 
 # keep alpha == 1 for all teams including an 'A'
-matches <- grepl('A', team_name)
+matches <- grepl('A', df$team_name)
 df$alpha <- ifelse(matches, 1, 0.2)
 # also set a custom fill colour for the non 'A' teams
 df$colour <- ifelse(matches, NA, 'gray')
 
 # scatterplot of all logos
 ggplot(df, aes(x = a, y = b)) +
-  geom_soccer_logos(aes(team_name = teams), width = 0.075) +
-  geom_label(aes(label = teams), nudge_y = -0.35, alpha = 0.5) +
+  geom_soccer_logos(aes(team_name = team_name), width = 0.075) +
+  geom_label(aes(label = team_name), nudge_y = -0.35, alpha = 0.5) +
   theme_void()
 
 # apply alpha via an aesthetic from inside the dataset `df`
 # please note that you have to add scale_alpha_identity() to use the alpha
 # values in your dataset!
 ggplot(df, aes(x = a, y = b)) +
-  geom_soccer_logos(aes(team_name = teams, alpha = alpha), width = 0.075) +
-  geom_label(aes(label = teams), nudge_y = -0.35, alpha = 0.5) +
+  geom_soccer_logos(aes(team_name = team_name, alpha = alpha), width = 0.075) +
+  geom_label(aes(label = team_name), nudge_y = -0.35, alpha = 0.5) +
   scale_alpha_identity() +
   theme_void()
 
@@ -134,16 +135,16 @@ ggplot(df, aes(x = a, y = b)) +
 # please note that you have to add scale_alpha_identity() as well as
 # scale_color_identity() to use the alpha and colour values in your dataset!
 ggplot(df, aes(x = a, y = b)) +
-  geom_soccer_logos(aes(team_name = teams, alpha = alpha, colour = colour), width = 0.075) +
-  geom_label(aes(label = teams), nudge_y = -0.35, alpha = 0.5) +
+  geom_soccer_logos(aes(team_name = team_name, alpha = alpha, colour = colour), width = 0.075) +
+  geom_label(aes(label = team_name), nudge_y = -0.35, alpha = 0.5) +
   scale_alpha_identity() +
   scale_color_identity() +
   theme_void()
 
 # apply alpha as constant for all logos
 ggplot(df, aes(x = a, y = b)) +
-  geom_soccer_logos(aes(team_name = teams), width = 0.075, alpha = 0.6) +
-  geom_label(aes(label = teams), nudge_y = -0.35, alpha = 0.5) +
+  geom_soccer_logos(aes(team_name = team_name), width = 0.075, alpha = 0.6) +
+  geom_label(aes(label = team_name), nudge_y = -0.35, alpha = 0.5) +
   theme_void()
 
 }

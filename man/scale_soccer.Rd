@@ -116,7 +116,7 @@ If \code{NA} (the default) no transparency will be applied. Can also be a vector
 alphas. All alpha levels must be in range \verb{[0,1]}.}
 }
 \description{
-These functions map NBA/WNBA team names to their team colors in
+These functions map soccer team names to their team colors in
 color and fill aesthetics
 }
 \examples{
@@ -124,11 +124,10 @@ color and fill aesthetics
 library(soccerplotR)
 library(ggplot2)
 
-COUNTRY <- 'ENG'
-team_names <- valid_team_names(country = COUNTRY)
+team_names <- soccerplotR::valid_team_names("ENG")
 
 df <- data.frame(
-  random_value = runif(length(team_abbr), 0, 1),
+  random_value = runif(length(team_names), 0, 1),
   team_name = team_names
 )
 ggplot(df, aes(x = team_name, y = random_value)) +
@@ -137,8 +136,4 @@ ggplot(df, aes(x = team_name, y = random_value)) +
   scale_fill_soccer(alpha = 0.4) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 }
-}
-\seealso{
-The theme elements \code{\link[=element_soccer_logo]{element_soccer_logo()}} and \code{\link[=element_wsoccer_logo]{element_wsoccer_logo()}} to
-replace axis text labels with logos.
 }
