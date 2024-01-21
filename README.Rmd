@@ -45,7 +45,7 @@ sysfonts::font_add_google(FONT)
 showtext::showtext_auto()
 showtext::showtext_opts(dpi = 300)
 
-team_names <- unlist(unname(soccerplotR::valid_team_names()))
+team_names <- unlist(unname(soccerplotR::all_valid_team_names()))
 set.seed(42)
 sampled_team_names <- sample(team_names, size = 45)
 
@@ -79,7 +79,7 @@ ggplot(df) +
   scale_fill_soccer(type = 'primary') +
   theme_void() +
   theme(
-    plot.margin = margin(15, 15, 15, 15, 'pt')
+    plot.margin = margin(25, 25, 25, 25, 'pt')
   ) +
   coord_cartesian(clip = 'off') +
   labs(
