@@ -36,13 +36,14 @@ pak::pak("tonyelhabr/soccerplotR")
 library(soccerplotR)
 library(ggplot2)
 
-COUNTRY <- 'ENG'
-team_names <- soccerplotR::valid_team_names(country = COUNTRY)
+team_names <- unlist(unname(soccerplotR::valid_team_names()))
+set.seed(42)
+sampled_team_names <- sample(team_names, size = 45)
 
 df <- data.frame(
-  a = c(rep(1:5, 8), c(1, 2, 3, 4)),
-  b = sort(c(rep(1:8, 5), c(0, 0, 0, 0)), decreasing = TRUE),
-  team_name = team_names
+  a = rep(1:5, 9),
+  b = sort(rep(0:8, 5), decreasing = TRUE),
+  team_name = sampled_team_names
 )
 
 ggplot(df) +
@@ -51,21 +52,21 @@ ggplot(df) +
     y = b
   ) +
   geom_soccer_logos(
-    country = COUNTRY,
     aes(
       team_name = team_name
     ), 
     width = 0.075
   ) +
-  geom_text(
+  geom_label(
     aes(
-      label = team_name
+      label = team_name,
+      fill = team_name
     ),
-    size = 10 / ggplot2::.pt,
+    color = 'white',
+    size = 10 / .pt,
     nudge_y = -0.5
   ) +
-  # scale_color_soccer(type = 'secondary')+
-  # scale_fill_soccer(type = 'primary')+
+  scale_fill_soccer(type = 'primary') +
   theme_void() +
   theme(
     plot.margin = margin(15, 15, 15, 15, 'pt')

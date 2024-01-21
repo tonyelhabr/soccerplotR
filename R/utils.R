@@ -3,12 +3,23 @@
 #' @description Thenames used in this function are extracted from Fotmob
 #'
 #' @export
-#' @return A vector of type `'character'`.
+#' @importFrom stats setNames
+#' @return A named vector of type `'character'`. Names are ISO 3166 3-letter country codes
 #' @examples
-#' valid_team_names('ENG')
-#' valid_team_names('USA')
+#' valid_team_names()
 valid_team_names <- function() {
-  sort(unique(soccerplotR::team_name_mapping))
+  countries <- names(soccerplotR::team_name_mapping)
+
+  # Use lapply instead of purrr::map
+  res <- purrr::map(
+    stats::setNames(countries, countries),
+    function(country) {
+      sort(unique(soccerplotR::team_name_mapping[[country]]))
+    }
+  )
+
+  names(res) <- countries
+  res
 }
 
 #' Standardize Soccer Team Names
@@ -35,11 +46,10 @@ clean_team_names <- function(
     keep_non_matches = TRUE
 ) {
   stopifnot(is.character(team_name))
-  country <- rlang::arg_match(country)
 
-  mapping <- soccerplotR::team_name_mapping
+  mapping <- purrr::flatten_chr(soccerplotR::team_name_mapping)
 
-  mapping_names <- unname(mapping[team_name])
+  mapping_names <- mapping[team_name]
 
   if (any(is.na(mapping_names)) && getOption('soccerplotR.verbose', default = interactive())) {
     cli::cli_warn('Abbreviations not found in {.code soccerplotR::team_name_mapping}: {team_name[is.na(mapping_names)]}')

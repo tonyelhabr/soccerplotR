@@ -57,8 +57,8 @@ scale_color_soccer <- function(
   if(is.null(values)){
     values <- switch(
       type,
-      'primary' = soccer_primary_colors,
-      'secondary' = soccer_secondary_colors
+      'primary' = primary_colors,
+      'secondary' = secondary_colors
     )
   }
 
@@ -97,8 +97,8 @@ scale_fill_soccer <- function(
   if(is.null(values)){
     values <- switch(
       type,
-      'primary' = soccer_primary_colors,
-      'secondary' = soccer_secondary_colors
+      'primary' = primary_colors,
+      'secondary' = secondary_colors
     )
   }
 

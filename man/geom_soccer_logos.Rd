@@ -75,7 +75,7 @@ team abbreviation. The latter can be checked with \code{\link[=valid_team_names]
 }
 \section{Aesthetics}{
 
-\code{geom_eng_logos()} understands the following aesthetics (required aesthetics are in bold):
+\code{geom_soccer_logos()} understands the following aesthetics (required aesthetics are in bold):
 \itemize{
 \item{\strong{x}}{ - The x-coordinate.}
 \item{\strong{y}}{ - The y-coordinate.}
@@ -117,7 +117,7 @@ df$colour <- ifelse(matches, NA, 'gray')
 
 # scatterplot of all logos
 ggplot(df, aes(x = a, y = b)) +
-  geom_eng_logos(aes(team_name = teams), width = 0.075) +
+  geom_soccer_logos(aes(team_name = teams), width = 0.075) +
   geom_label(aes(label = teams), nudge_y = -0.35, alpha = 0.5) +
   theme_void()
 
@@ -125,7 +125,7 @@ ggplot(df, aes(x = a, y = b)) +
 # please note that you have to add scale_alpha_identity() to use the alpha
 # values in your dataset!
 ggplot(df, aes(x = a, y = b)) +
-  geom_eng_logos(aes(team_name = teams, alpha = alpha), width = 0.075) +
+  geom_soccer_logos(aes(team_name = teams, alpha = alpha), width = 0.075) +
   geom_label(aes(label = teams), nudge_y = -0.35, alpha = 0.5) +
   scale_alpha_identity() +
   theme_void()
@@ -134,7 +134,7 @@ ggplot(df, aes(x = a, y = b)) +
 # please note that you have to add scale_alpha_identity() as well as
 # scale_color_identity() to use the alpha and colour values in your dataset!
 ggplot(df, aes(x = a, y = b)) +
-  geom_eng_logos(aes(team_name = teams, alpha = alpha, colour = colour), width = 0.075) +
+  geom_soccer_logos(aes(team_name = teams, alpha = alpha, colour = colour), width = 0.075) +
   geom_label(aes(label = teams), nudge_y = -0.35, alpha = 0.5) +
   scale_alpha_identity() +
   scale_color_identity() +
@@ -142,7 +142,7 @@ ggplot(df, aes(x = a, y = b)) +
 
 # apply alpha as constant for all logos
 ggplot(df, aes(x = a, y = b)) +
-  geom_eng_logos(aes(team_name = teams), width = 0.075, alpha = 0.6) +
+  geom_soccer_logos(aes(team_name = teams), width = 0.075, alpha = 0.6) +
   geom_label(aes(label = teams), nudge_y = -0.35, alpha = 0.5) +
   theme_void()
 

@@ -7,12 +7,11 @@
 valid_team_names()
 }
 \value{
-A vector of type \code{'character'}.
+A named vector of type \code{'character'}. Names are ISO 3166 3-letter country codes
 }
 \description{
 Thenames used in this function are extracted from Fotmob
 }
 \examples{
-valid_team_names('ENG')
-valid_team_names('USA')
+valid_team_names()
 }

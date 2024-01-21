@@ -2,9 +2,10 @@
 "_PACKAGE"
 
 ## usethis namespace: start
-#' @import cli
+#' @importFrom cli cli_warn
 #' @import ggpath
 #' @importFrom ggplot2 element_grob
 #' @import grid
+#' @importFrom purrr map flatten_chr
 ## usethis namespace: end
 NULL
