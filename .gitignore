@@ -2,3 +2,5 @@
 .Rhistory
 .Rdata
 docs
+inst/doc
+docs/

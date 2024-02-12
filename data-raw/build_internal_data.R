@@ -47,13 +47,34 @@ get_fotmob_league_teams <- function(league_id, season = 2023) {
     league_id = league_id,
     season = season
   )
-  tables <- dplyr::bind_rows(table_init$table)
-  table <- if('tables' %in% names(table_init)) {
-    dplyr::bind_rows(tables$table$all) |>
-      dplyr::distinct(id, name)
+
+  nms <- names(table_init)
+  cols <- c('all')
+  raw_table <- if('table' %in% nms) {
+    table_init$table |>
+      dplyr::select(dplyr::all_of(cols))
+  } else if('tables' %in% nms) {
+    tables <- dplyr::bind_rows(table_init$tables)
+    tables$all <- tables$table$all
+    tables |>
+      dplyr::rename(
+        group_id = .data[['leagueId']],
+        group_page_url = .data[['pageUrl']],
+        group_name = .data[['leagueName']]
+      ) |>
+      dplyr::select(
+        -c(.data[['table']], .data[['legend']])
+      )
   } else {
-    tables$all[[1]]
+    stop(
+      'Expected to find `table` or `tables` element but did not.'
+    )
   }
+  table <- raw_table |>
+    tibble::as_tibble() |>
+    dplyr::select(dplyr::all_of(cols)) |>
+    tidyr::unnest(dplyr::all_of(cols))
+
   table |>
     dplyr::transmute(
       team = name,
@@ -91,9 +112,54 @@ get_fotmob_team_colors_logos <- function(team_id) {
   )
 }
 
+get_fotmob_league_ids <- function() {
+  resp <- httr::POST('https://www.fotmob.com/api/allLeagues')
+  cont <- httr::content(resp)
+
+  .extract_leagues <- function(x) {
+    cont[[x]] |>
+      tibble::enframe() |>
+      dplyr::select(dplyr::all_of('value')) |>
+      tidyr::unnest_wider(dplyr::all_of('value')) |>
+      tidyr::unnest_longer(dplyr::all_of('leagues')) |>
+      dplyr::select(dplyr::all_of(c('ccode', 'name', 'leagues'))) |>
+      dplyr::rename('country' = 2) |>
+      tidyr::unnest_wider(dplyr::all_of('leagues')) |>
+      janitor::clean_names() |>
+      dplyr::select(dplyr::all_of(c('ccode', 'country', 'id', 'name', 'page_url')))
+  }
+
+  purrr::map_dfr(
+    c(
+      'international',
+      'countries'
+    ),
+    .extract_leagues
+  )
+}
+
+all_league_ids_df <- get_fotmob_league_ids()
+# fotmob:::.fotmob_get_league_tables(77, 'https://fotmob.com/leagues/77/overview/world-cup', 2022)
+
 popular_league_ids <- c(47, 54, 87, 53, 130, 55)
 tier2_big5_and_mls_ids <- c(48, 110, 146, 86, 140, 8972)
-all_league_ids <- c(popular_league_ids, tier2_big5_and_mls_ids)
+# international_ids <- 77
+international_ids <- all_league_ids_df |>
+  dplyr::filter(ccode == 'INT') |>
+  # dplyr::filter(name == 'Friendlies') |>
+  dplyr::filter(
+    name %in% c(
+      'World Cup Qualification CONCACAF',
+      'World Cup Qualification CONMEBOL',
+      'World Cup Qualification UEFA',
+      'World Cup Qualification AFC',
+      'World Cup Qualification CAF',
+      'World Cup Qualification OFC'
+    )
+  ) |>
+  # dplyr::arrange(id)
+  dplyr::pull(name, id)
+all_league_ids <- c(popular_league_ids, tier2_big5_and_mls_ids, names(international_ids))
 # all_leagues <- readr::read_csv('https://raw.githubusercontent.com/JaseZiv/worldfootballR_data/master/raw-data/fotmob-leagues/all_leagues.csv')
 
 league_info <- purrr::map_dfr(
@@ -108,17 +174,24 @@ league_info <- purrr::map_dfr(
 )
 
 team_standings <- purrr::map_dfr(
-  all_league_ids,
-  \(league_id) {
-    io_wrapper(
-      f = get_fotmob_league_teams,
-      id = league_id,
-      dir = file.path('data-raw', 'fotmob', 'team_ids')
-    ) |>
-      dplyr::mutate(
-        league_id = .env$league_id,
-        .before = 1
-      )
+  2018:2023,
+  \(season) {
+    purrr::map_dfr(
+      all_league_ids,
+      \(league_id) {
+        io_wrapper(
+          f = get_fotmob_league_teams,
+          id = league_id,
+          dir = file.path('data-raw', 'fotmob', 'team_ids', season),
+          season = season
+        ) |>
+          dplyr::mutate(
+            'league_id' = league_id,
+            'season_id' = season,
+            .before = 1
+          )
+      }
+    )
   }
 ) |>
   dplyr::inner_join(
@@ -128,7 +201,7 @@ team_standings <- purrr::map_dfr(
   dplyr::arrange(country, team)
 
 team_colors_logos <- purrr::map_dfr(
-  team_standings$team_id,
+  sort(unique(team_standings$team_id)),
   \(team_id) {
     io_wrapper(
       f = get_fotmob_team_colors_logos,
@@ -147,7 +220,7 @@ team_colors_logos <- purrr::map_dfr(
     secondary = color_away
   ) |>
   dplyr::inner_join(
-    team_standings |> dplyr::select(team_id, league_id, country),
+    team_standings |> dplyr::distinct(team_id, league_id, country),
     by = dplyr::join_by(team_id)
   )
 
@@ -192,13 +265,13 @@ team_name_mapping <- split(
   team_colors_logos$country
 ) |>
   purrr::map(
-  \(.x) {
-    rlang::set_names(
-      .x$short_name,
-      .x$short_name
-    )
-  }
-)
+    \(.x) {
+      rlang::set_names(
+        .x$short_name,
+        .x$short_name
+      )
+    }
+  )
 
 team_name_mapping[['ENG']] <- c(
   team_name_mapping[['ENG']],
@@ -251,3 +324,21 @@ usethis::use_data(
   internal = FALSE,
   overwrite = TRUE
 )
+
+## Identify conferences
+# international_teams <- team_colors_logos |>
+#   dplyr::filter(league_id %in% names(international_ids)) |>
+#   dplyr::transmute(
+#     short_name,
+#     continent = international_ids[as.character(league_id)]
+#   ) |>
+#   dplyr::arrange(short_name)
+#
+# split(international_teams, international_teams$continent) |>
+#   purrr::map(
+#     \(.x) {
+#       .x$short_name
+#     }
+#   ) |>
+#   purrr::pluck(1) |>
+#   datapasta::vector_paste_vertical()
