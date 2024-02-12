@@ -1,0 +1,73 @@
+---
+title: "National Teams"
+author: "Tony ElHabr"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{National Teams}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+This package supports 188 countries. Valid names are all grouped under the `INT` country, so you'll have to do the work to split out countries into continents, if you so desire.
+
+```{r national-teams, fig.height=7, fig.width=7}
+library(soccerplotR)
+library(ggplot2)
+
+FONT <- "Kanit"
+sysfonts::font_add_google(FONT)
+showtext::showtext_auto()
+showtext::showtext_opts(dpi = 300)
+
+team_names <- soccerplotR::valid_team_names("INT")
+
+df <- data.frame(
+  a = rep(1:16, 12),
+  b = sort(rep(0:11, 16), decreasing = TRUE),
+  team_name = c(team_names, rep(NA, 4))
+)
+
+ggplot(df) +
+  aes(
+    x = a, 
+    y = b
+  ) +
+  geom_soccer_logos(
+    aes(
+      team_name = team_name
+    ), 
+    width = 0.075
+  ) +
+  geom_label(
+    aes(
+      label = team_name,
+      fill = team_name
+    ),
+    color = "white",
+    family = FONT,
+    size = 8 / .pt,
+    nudge_y = -0.5
+  ) +
+  scale_fill_soccer(type = "primary") +
+  theme_void() +
+  theme(
+    plot.margin = margin(25, 25, 25, 25, "pt")
+  ) +
+  coord_cartesian(clip = "off") +
+  labs(
+    title = "188 national teams"
+  ) +
+  theme(
+    plot.title.position = "plot",
+    plot.title = element_text(family = FONT, size = 18, hjust = 0.5)
+  )
+```
