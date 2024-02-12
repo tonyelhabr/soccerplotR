@@ -10,64 +10,107 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  message = FALSE,
-  warning = FALSE
+collapse = TRUE,
+comment = "#>",
+message = FALSE,
+warning = FALSE
 )
 ```
 
-This package supports 188 countries. Valid names are all grouped under the `INT` country, so you'll have to do the work to split out countries into continents, if you so desire.
+This package supports 188 countries. Valid names are all grouped under the `INT` country, so you'll have to do the work to split out countries into continents or FIFA continental conferences, if you so desire.
 
-```{r national-teams, fig.height=7, fig.width=7}
+```{r national-teams, fig.height=7, fig.width=7, eval=TRUE}
 library(soccerplotR)
+
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(purrr)
+
 library(ggplot2)
+library(showtext)
 
 FONT <- "Kanit"
-sysfonts::font_add_google(FONT)
-showtext::showtext_auto()
-showtext::showtext_opts(dpi = 300)
+font_add_google(FONT)
+showtext_auto()
+showtext_opts(dpi = 300)
 
-team_names <- soccerplotR::valid_team_names("INT")
-
-df <- data.frame(
-  a = rep(1:16, 12),
-  b = sort(rep(0:11, 16), decreasing = TRUE),
-  team_name = c(team_names, rep(NA, 4))
+int_team_names <- valid_team_names("INT")
+conference_countries <- list(
+  "AFC" = c("Afghanistan", "Australia", "Bahrain", "Bangladesh", "China", "Chinese Taipei", "Hong Kong", "India", "Indonesia", "Iran", "Iraq", "Japan", "Jordan", "Kuwait", "Kyrgyzstan", "Lebanon", "Malaysia", "Myanmar", "Nepal", "North Korea", "Oman", "Pakistan", "Palestine", "Philippines", "Qatar", "Saudi Arabia", "Singapore", "South Korea", "Syria", "Tajikistan", "Thailand", "Turkmenistan", "UAE", "Uzbekistan", "Vietnam", "Yemen"),
+  "CAF" = c("Algeria", "Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cameroon", "Cape Verde", "Central African Republic", "Chad", "Comoros", "Congo", "DR Congo", "Djibouti", "Egypt", "Equatorial Guinea", "Eswatini", "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Guinea-Bissau", "Ivory Coast", "Kenya", "Lesotho", "Liberia", "Libya", "Madagascar", "Malawi", "Mali", "Mauritania", "Mauritius", "Morocco", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "Sao Tome and Principe", "Senegal", "Seychelles", "Sierra Leone", "Somalia", "South Africa", "South Sudan", "Sudan", "Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe"),
+  "CONCACAF" = c("Antigua and Barbuda", "Aruba", "Bahamas", "Barbados", "Belize", "Bermuda", "Cayman Islands", "Costa Rica", "Cuba", "Curacao", "Dominica", "Dominican Republic", "El Salvador", "Grenada", "Guatemala", "Guyana", "Haiti", "Honduras", "Jamaica", "Montserrat", "Nicaragua", "Panama", "Puerto Rico", "Saint Lucia", "Saint Vincent and The Grenadines", "St. Kitts and Nevis", "Suriname", "Trinidad and Tobago"),
+  "CONMEBOL" = c("Argentina", "Bolivia", "Brazil", "Chile", "Colombia", "Ecuador", "Paraguay", "Peru", "Uruguay", "Venezuela"),
+  "OFC" = c("Fiji", "New Caledonia", "New Zealand", "Papua New Guinea", "Solomon Islands", "Tahiti"),
+  "UEFA" = c("Albania", "Andorra", "Armenia", "Austria", "Azerbaijan", "Belarus", "Belgium", "Bosnia and Herzegovina", "Bulgaria", "Croatia", "Cyprus", "Czechia", "Denmark", "England", "Estonia", "Faroe Islands", "Finland", "France", "Georgia", "Germany", "Gibraltar", "Greece", "Hungary", "Iceland", "Ireland", "Israel", "Italy", "Kazakhstan", "Kosovo", "Latvia", "Liechtenstein", "Lithuania", "Luxembourg", "Malta", "Moldova", "Montenegro", "Netherlands", "North Macedonia", "Northern Ireland", "Norway", "Poland", "Portugal", "Romania", "Russia", "San Marino", "Scotland", "Serbia", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland", "Turkiye", "Ukraine", "Wales")
 )
 
-ggplot(df) +
-  aes(
-    x = a, 
-    y = b
-  ) +
-  geom_soccer_logos(
-    aes(
-      team_name = team_name
-    ), 
-    width = 0.075
-  ) +
-  geom_label(
-    aes(
-      label = team_name,
-      fill = team_name
-    ),
-    color = "white",
-    family = FONT,
-    size = 8 / .pt,
-    nudge_y = -0.5
-  ) +
-  scale_fill_soccer(type = "primary") +
-  theme_void() +
-  theme(
-    plot.margin = margin(25, 25, 25, 25, "pt")
-  ) +
-  coord_cartesian(clip = "off") +
-  labs(
-    title = "188 national teams"
-  ) +
-  theme(
-    plot.title.position = "plot",
-    plot.title = element_text(family = FONT, size = 18, hjust = 0.5)
+conference_mapping <- enframe(conference_countries, "conference", "team_name") |> 
+  unnest_longer(team_name)
+
+mapped_int_team_names <- tibble(
+  team_name = int_team_names
+) |> 
+  inner_join(
+    conference_mapping,
+    by = join_by(team_name)
+  )
+
+coords <- mapped_int_team_names |> 
+  arrange(conference, team_name) |> 
+  group_by(conference) |>
+  mutate(
+    rn = row_number(team_name),
+    max_rn = max(rn),
+    row = 1 + (rn - 1) %/% floor(sqrt(max_rn)),
+    max_row = max(row)
+  ) |> 
+  ungroup() |> 
+  group_by(conference, row) |> 
+  mutate(
+    col = row_number(team_name),
+    row = max_row - row + 1
+  ) |> 
+  ungroup()
+  
+
+split(coords, coords$conference) |> 
+  walk(
+    \(df) {
+      p <- df |> 
+        ggplot() +
+        aes(
+          x = col, 
+          y = row
+        ) +
+        geom_soccer_logos(
+          aes(
+            team_name = team_name
+          ), 
+          width = 0.075
+        ) +
+        geom_label(
+          aes(
+            label = team_name,
+            fill = team_name
+          ),
+          color = "white",
+          family = FONT,
+          size = 8 / .pt,
+          nudge_y = -0.5
+        ) +
+        scale_fill_soccer(type = "primary") +
+        theme_void() +
+        theme(
+          plot.margin = margin(25, 25, 25, 25, "pt"),
+          plot.title.position = "plot",
+          plot.title = element_text(family = FONT, size = 18, hjust = 0.5)
+        ) +
+        coord_cartesian(clip = "off") +
+        labs(
+          title = df$conference[1]
+        )
+      print(p)
+    }
   )
 ```

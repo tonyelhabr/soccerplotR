@@ -39,6 +39,7 @@ Using `all_valid_team_names`, `geom_soccer_logos`, and
 ``` r
 library(soccerplotR)
 library(ggplot2)
+library(showtext)
 
 FONT <- "Kanit"
 sysfonts::font_add_google(FONT)

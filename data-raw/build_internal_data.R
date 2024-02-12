@@ -158,8 +158,8 @@ international_ids <- all_league_ids_df |>
     )
   ) |>
   # dplyr::arrange(id)
-  dplyr::pull(id)
-all_league_ids <- c(popular_league_ids, tier2_big5_and_mls_ids, international_ids)
+  dplyr::pull(name, id)
+all_league_ids <- c(popular_league_ids, tier2_big5_and_mls_ids, names(international_ids))
 # all_leagues <- readr::read_csv('https://raw.githubusercontent.com/JaseZiv/worldfootballR_data/master/raw-data/fotmob-leagues/all_leagues.csv')
 
 league_info <- purrr::map_dfr(
@@ -324,3 +324,21 @@ usethis::use_data(
   internal = FALSE,
   overwrite = TRUE
 )
+
+## Identify conferences
+# international_teams <- team_colors_logos |>
+#   dplyr::filter(league_id %in% names(international_ids)) |>
+#   dplyr::transmute(
+#     short_name,
+#     continent = international_ids[as.character(league_id)]
+#   ) |>
+#   dplyr::arrange(short_name)
+#
+# split(international_teams, international_teams$continent) |>
+#   purrr::map(
+#     \(.x) {
+#       .x$short_name
+#     }
+#   ) |>
+#   purrr::pluck(1) |>
+#   datapasta::vector_paste_vertical()
