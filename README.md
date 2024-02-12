@@ -33,6 +33,9 @@ pak::pak("tonyelhabr/soccerplotR")
 
 ## Examples
 
+Using `all_valid_team_names`, `geom_soccer_logos`, and
+`scale_fill_soccer(color = "primary")`.
+
 ``` r
 library(soccerplotR)
 library(ggplot2)
@@ -42,7 +45,7 @@ sysfonts::font_add_google(FONT)
 showtext::showtext_auto()
 showtext::showtext_opts(dpi = 300)
 
-team_names <- unlist(unname(soccerplotR::all_valid_team_names()))
+team_names <- unlist(unname(all_valid_team_names()))
 set.seed(42)
 sampled_team_names <- sample(team_names, size = 45)
 
@@ -76,44 +79,59 @@ ggplot(df) +
   scale_fill_soccer(type = "primary") +
   theme_void() +
   theme(
-    plot.margin = margin(25, 25, 25, 25, "pt")
+    plot.margin = margin(25, 25, 25, 25, "pt"),
+    plot.title.position = "plot",
+    plot.title = element_text(family = FONT, size = 18, hjust = 0.5)
   ) +
   coord_cartesian(clip = "off") +
   labs(
     title = "A random sample of 45 teams"
-  ) +
-  theme(
-    plot.title.position = "plot",
-    plot.title = element_text(family = FONT, size = 18, hjust = 0.5)
   )
 ```
 
 <img src="man/figures/README-example-1-1.png" width="100%" />
 
+Using `valid_team_names`, `scale_color_soccer(color = "secondary")`, and
+`scale_fill_soccer(color = "primary")`.
+
 ``` r
-team_names <- soccerplotR::valid_team_names("ENG")
+team_names <- valid_team_names("ENG")
 
 df <- data.frame(
-  team_name = team_names,
-  value = 1:length(team_names)
+  a = rep(1:5, 9),
+  b = sort(rep(0:8, 5), decreasing = TRUE),
+  team_name = c(team_names, NA)
 )
 
-df$team_name <- factor(df$team_name, levels = df$team_name[order(df$value)])
-
-ggplot(df, aes(y = team_name, x = value)) +
-  geom_col(aes(color = team_name, fill = team_name), width = 0.8) +
-  scale_color_soccer(type = "secondary") +
-  scale_fill_soccer(alpha = 0.8) +
-  theme_minimal() +
-  theme(
-    plot.title.position = "plot",
-    plot.title = element_text(family = FONT, size = 18),
-    axis.text = element_text(family = FONT),
-    panel.grid.major.y = element_blank()
+ggplot(df, aes(x = a, y = b)) +
+  geom_point(
+    aes(
+      color = team_name, 
+      fill = team_name
+    ), 
+    shape = 21,
+    size = 12,
+    stroke = 3
   ) +
+  geom_text(
+    aes(
+      label = team_name
+    ),
+    color = "black",
+    family = FONT,
+    size = 10 / .pt,
+    nudge_y = -0.5
+  ) +
+  scale_color_soccer(type = "secondary") +
+  scale_fill_soccer(type = "primary", alpha = 0.8) +
+  theme_void() +
+  theme(
+    plot.margin = margin(25, 25, 25, 25, "pt"),
+    plot.title.position = "plot",
+    plot.title = element_text(family = FONT, size = 18, hjust = 0.5)
+  ) +
+  coord_cartesian(clip = "off") +
   labs(
-    x = NULL,
-    y = NULL,
     title = "English teams in {soccerplotR}"
   )
 ```
