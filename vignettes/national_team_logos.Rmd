@@ -10,10 +10,10 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-collapse = TRUE,
-comment = "#>",
-message = FALSE,
-warning = FALSE
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE
 )
 ```
 
@@ -23,9 +23,9 @@ This package supports 188 countries. Valid names are all grouped under the `INT`
 library(soccerplotR)
 
 library(dplyr)
-library(tidyr)
-library(tibble)
 library(purrr)
+library(tibble)
+library(tidyr)
 
 library(ggplot2)
 library(showtext)

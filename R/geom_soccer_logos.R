@@ -40,9 +40,9 @@
 #' team_names <- soccerplotR::valid_team_names("ENG")
 #'
 #' df <- data.frame(
-#'   a = c(rep(1:6, 7), c(1, 2)),
-#'   b = sort(c(rep(2, 8, 6), c(1, 1)), decreasing = TRUE),
-#'   team_name = team_names
+#'   a = rep(1:5, 9),
+#'   b = sort(rep(0:8, 5), decreasing = TRUE),
+#'   team_name = c(team_names, NA)
 #' )
 #'
 #' # keep alpha == 1 for all teams including an 'A'
